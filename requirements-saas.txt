@@ -1,0 +1,24 @@
+# Maxima SaaS — Ek Bagimliliklar
+# Kurulum: pip install -r requirements-saas.txt
+
+# ── Mevcut bagimliliklar ──────────────────────────────────────
+-r requirements.txt
+
+# ── Web Framework ────────────────────────────────────────────
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# ── Veritabani ───────────────────────────────────────────────
+sqlalchemy>=2.0.0
+
+# ── Auth ─────────────────────────────────────────────────────
+python-jose[cryptography]>=3.3.0
+pydantic[email]>=2.0.0
+
+# ── Odeme ────────────────────────────────────────────────────
+stripe>=7.0.0               # Stripe odeme entegrasyonu
+
+# ── Production (opsiyonel) ───────────────────────────────────
+# psycopg2-binary>=2.9.0    # PostgreSQL icin
+# redis>=5.0.0              # Rate limiting / cache icin
+# celery>=5.3.0             # Distributed task queue icin

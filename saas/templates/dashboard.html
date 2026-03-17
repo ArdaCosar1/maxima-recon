@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maxima SaaS — Security Reconnaissance Platform</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f172a;--bg2:#1e293b;--bg3:#334155;
+  --text:#f1f5f9;--muted:#94a3b8;--border:#475569;
+  --accent:#6366f1;--accent2:#818cf8;
+  --green:#22c55e;--red:#ef4444;--yellow:#eab308;--orange:#f97316;--cyan:#06b6d4;
+  --radius:10px;
+}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:var(--accent2);text-decoration:none}
+button{cursor:pointer;border:none;font-family:inherit}
+input,select{font-family:inherit;font-size:.9rem}
+
+/* Layout */
+.app{display:flex;min-height:100vh}
+.sidebar{width:260px;background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;display:flex;flex-direction:column;position:fixed;height:100vh;z-index:10}
+.main{margin-left:260px;flex:1;padding:30px 40px;min-height:100vh}
+
+/* Sidebar */
+.logo{padding:0 24px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.logo svg{width:32px;height:32px}
+.logo-text{font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-sub{font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.nav{flex:1;padding:16px 12px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .15s;margin-bottom:2px;cursor:pointer}
+.nav-item:hover,.nav-item.active{background:var(--bg3);color:var(--text)}
+.nav-item.active{color:var(--accent2);background:rgba(99,102,241,.15)}
+.nav-section{font-size:.7rem;color:var(--border);text-transform:uppercase;letter-spacing:1px;padding:14px 14px 6px;font-weight:700}
+.user-box{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+.user-info{flex:1}
+.user-name{font-size:.85rem;font-weight:600}
+.user-plan{font-size:.7rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px}
+.btn-logout{background:transparent;color:var(--muted);font-size:.78rem;padding:4px 8px;border-radius:6px}
+.btn-logout:hover{background:var(--bg3);color:var(--red)}
+
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:20px}
+.card-title{font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:14px}
+
+/* Stat Grid */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.stat-value{font-size:2rem;font-weight:800;line-height:1}
+.stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:6px}
+
+/* Buttons */
+.btn{padding:10px 20px;border-radius:8px;font-weight:600;font-size:.88rem;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2)}
+.btn-danger{background:var(--red);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+.btn-ghost:hover{background:var(--bg3)}
+.btn-sm{padding:6px 14px;font-size:.8rem}
+
+/* Table */
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:10px 14px;border-bottom:1px solid var(--border);font-weight:700}
+td{padding:12px 14px;border-bottom:1px solid rgba(71,85,105,.3);font-size:.88rem}
+tr:hover td{background:rgba(99,102,241,.04)}
+
+/* Status badges */
+.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;letter-spacing:.3px}
+.badge-pending{background:rgba(234,179,8,.15);color:var(--yellow)}
+.badge-running{background:rgba(6,182,212,.15);color:var(--cyan);animation:pulse 1.5s infinite}
+.badge-completed{background:rgba(34,197,94,.15);color:var(--green)}
+.badge-failed{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-cancelled{background:rgba(148,163,184,.15);color:var(--muted)}
+
+.sev-critical{color:var(--red);font-weight:700}
+.sev-high{color:var(--orange);font-weight:700}
+.sev-medium{color:var(--yellow);font-weight:600}
+.sev-low{color:var(--cyan)}
+.sev-info{color:var(--muted)}
+
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* Forms */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:600}
+.form-control{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.9rem;outline:none;transition:border .15s}
+.form-control:focus{border-color:var(--accent)}
+select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:1.2rem;font-weight:700;margin-bottom:20px}
+
+/* Auth Page */
+.auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+.auth-box{width:100%;max-width:420px;padding:20px}
+.auth-logo{text-align:center;margin-bottom:32px}
+.auth-logo .logo-text{font-size:2rem}
+
+/* Toast */
+.toast{position:fixed;top:20px;right:20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 20px;z-index:200;font-size:.88rem;display:none;animation:slideIn .3s}
+.toast.success{border-left:4px solid var(--green)}
+.toast.error{border-left:4px solid var(--red)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* Page header */
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:1.5rem;font-weight:700}
+
+/* Risk meter */
+.risk-meter{width:100%;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:8px}
+.risk-fill{height:100%;border-radius:4px;transition:width .5s}
+
+/* Finding card */
+.finding{background:var(--bg);border-radius:8px;padding:14px 16px;margin-bottom:8px;border-left:3px solid var(--border)}
+.finding.critical{border-left-color:var(--red)}
+.finding.high{border-left-color:var(--orange)}
+.finding.medium{border-left-color:var(--yellow)}
+.finding.low{border-left-color:var(--cyan)}
+
+/* Plan cards */
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.plan-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px;text-align:center;transition:all .2s}
+.plan-card:hover{border-color:var(--accent)}
+.plan-card.current{border-color:var(--accent);box-shadow:0 0 20px rgba(99,102,241,.15)}
+.plan-price{font-size:2.5rem;font-weight:800;margin:12px 0}
+.plan-price span{font-size:.9rem;font-weight:400;color:var(--muted)}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main{margin-left:0;padding:16px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+}
+
+/* Empty state */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty svg{width:64px;height:64px;margin-bottom:16px;opacity:.3}
+.empty p{margin-bottom:20px}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  MAXIMA SAAS — SINGLE PAGE APPLICATION
+// ══════════════════════════════════════════════════════════════
+
+const API = '/api';
+let currentUser = null;
+let token = localStorage.getItem('mx_token');
+
+// ── API Helper ───────────────────────────────────────────────
+async function api(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  const res = await fetch(API + path, { ...opts, headers });
+  const data = await res.json();
+  if (!res.ok) {
+    if (res.status === 401) { logout(); return null; }
+    throw new Error(data.detail || 'API hatasi');
+  }
+  return data;
+}
+
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type}`;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3500);
+}
+
+// ── Auth ─────────────────────────────────────────────────────
+async function doLogin(username, password) {
+  try {
+    const data = await api('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+    });
+    token = data.access_token;
+    currentUser = data.user;
+    localStorage.setItem('mx_token', token);
+    toast('Giris basarili!');
+    navigate('/dashboard');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function doRegister(email, username, password) {
+  try {
+    const data = await api('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ email, username, password }),
+    });
+    token = data.access_token;
+    currentUser = data.user;
+    localStorage.setItem('mx_token', token);
+    toast('Kayit basarili!');
+    navigate('/dashboard');
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+function logout() {
+  token = null; currentUser = null;
+  localStorage.removeItem('mx_token');
+  navigate('/login');
+}
+
+async function checkAuth() {
+  if (!token) return false;
+  try {
+    currentUser = await api('/auth/me');
+    return !!currentUser;
+  } catch { return false; }
+}
+
+// ── Router ───────────────────────────────────────────────────
+function navigate(path) {
+  history.pushState(null, '', path);
+  render();
+}
+
+window.addEventListener('popstate', render);
+
+async function render() {
+  const path = location.pathname;
+  const app = document.getElementById('app');
+
+  if (path === '/login' || path === '/register') {
+    app.innerHTML = renderAuth(path);
+    bindAuth();
+    return;
+  }
+
+  if (!await checkAuth()) {
+    navigate('/login');
+    return;
+  }
+
+  if (path.startsWith('/scan/')) {
+    const id = path.split('/scan/')[1];
+    app.innerHTML = renderLayout(await renderScanDetail(id));
+  } else if (path === '/new-scan') {
+    app.innerHTML = renderLayout(renderNewScan());
+  } else if (path === '/scans') {
+    app.innerHTML = renderLayout(await renderScanList());
+  } else if (path === '/settings') {
+    app.innerHTML = renderLayout(renderSettings());
+  } else if (path === '/plans') {
+    app.innerHTML = renderLayout(await renderPlans());
+  } else {
+    app.innerHTML = renderLayout(await renderDashboard());
+  }
+
+  bindEvents();
+}
+
+// ── Layout ───────────────────────────────────────────────────
+function renderLayout(content) {
+  const path = location.pathname;
+  const u = currentUser;
+  const initial = u ? u.username[0].toUpperCase() : '?';
+  return `
+  <div class="app">
+    <div class="sidebar">
+      <div class="logo">
+        <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#6366f1"/><path d="M8 24V8l8 8 8-8v16" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div><div class="logo-text">MAXIMA</div><div class="logo-sub">SaaS Platform</div></div>
+      </div>
+      <div class="nav">
+        <div class="nav-section">Ana Menu</div>
+        <div class="nav-item ${path==='/dashboard'||path==='/'?'active':''}" onclick="navigate('/dashboard')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </div>
+        <div class="nav-item ${path==='/new-scan'?'active':''}" onclick="navigate('/new-scan')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          Yeni Tarama
+        </div>
+        <div class="nav-item ${path==='/scans'?'active':''}" onclick="navigate('/scans')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          Taramalarim
+        </div>
+        <div class="nav-section">Hesap</div>
+        <div class="nav-item ${path==='/plans'?'active':''}" onclick="navigate('/plans')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Planlar
+        </div>
+        <div class="nav-item ${path==='/settings'?'active':''}" onclick="navigate('/settings')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          Ayarlar
+        </div>
+      </div>
+      <div class="user-box">
+        <div class="user-avatar">${initial}</div>
+        <div class="user-info">
+          <div class="user-name">${u?.username||''}</div>
+          <div class="user-plan">${u?.plan||'free'} plan</div>
+        </div>
+        <button class="btn-logout" onclick="logout()">Cikis</button>
+      </div>
+    </div>
+    <div class="main">${content}</div>
+  </div>`;
+}
+
+// ── Auth Pages ───────────────────────────────────────────────
+function renderAuth(path) {
+  const isLogin = path === '/login';
+  return `
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <div class="logo-text" style="font-size:2.5rem">MAXIMA</div>
+        <div style="color:var(--muted);font-size:.85rem;margin-top:4px">Security Reconnaissance Platform</div>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:8px;margin-bottom:20px">
+          <button class="btn ${isLogin?'btn-primary':'btn-ghost'}" style="flex:1" onclick="navigate('/login')">Giris Yap</button>
+          <button class="btn ${!isLogin?'btn-primary':'btn-ghost'}" style="flex:1" onclick="navigate('/register')">Kayit Ol</button>
+        </div>
+        <form id="authForm">
+          ${!isLogin ? '<div class="form-group"><label>E-posta</label><input class="form-control" name="email" type="email" required placeholder="ornek@mail.com"></div>' : ''}
+          <div class="form-group">
+            <label>Kullanici Adi</label>
+            <input class="form-control" name="username" required placeholder="kullanici_adi" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label>Sifre</label>
+            <input class="form-control" name="password" type="password" required placeholder="En az 6 karakter" autocomplete="current-password">
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:8px" type="submit">
+            ${isLogin ? 'Giris Yap' : 'Kayit Ol'}
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindAuth() {
+  const form = document.getElementById('authForm');
+  if (!form) return;
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const path = location.pathname;
+    if (path === '/register') {
+      await doRegister(fd.get('email'), fd.get('username'), fd.get('password'));
+    } else {
+      await doLogin(fd.get('username'), fd.get('password'));
+    }
+  };
+}
+
+// ── Dashboard ────────────────────────────────────────────────
+async function renderDashboard() {
+  let data;
+  try { data = await api('/dashboard'); }
+  catch { return '<p>Dashboard yuklenemedi.</p>'; }
+
+  const scansHtml = data.recent_scans.length ? data.recent_scans.map(s => `
+    <tr onclick="navigate('/scan/${s.id}')" style="cursor:pointer">
+      <td style="font-weight:600">${esc(s.target)}</td>
+      <td><span class="badge badge-${s.status}">${s.status}</span></td>
+      <td>
+        ${s.critical_count?`<span class="sev-critical">${s.critical_count}C</span> `:''}
+        ${s.high_count?`<span class="sev-high">${s.high_count}H</span> `:''}
+        ${s.medium_count?`<span class="sev-medium">${s.medium_count}M</span> `:''}
+        <span class="sev-info">${s.total_findings} toplam</span>
+      </td>
+      <td style="color:var(--muted)">${timeAgo(s.created_at)}</td>
+    </tr>
+  `).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:30px">Henuz tarama yok</td></tr>';
+
+  const remaining = data.scans_remaining === -1 ? 'Sinirsiz' : data.scans_remaining;
+
+  return `
+    <div class="page-header">
+      <div class="page-title">Dashboard</div>
+      <button class="btn btn-primary" onclick="navigate('/new-scan')">+ Yeni Tarama</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-value" style="color:var(--accent)">${data.total_scans}</div><div class="stat-label">Toplam Tarama</div></div>
+      <div class="stat"><div class="stat-value" style="color:var(--cyan)">${data.active_scans}</div><div class="stat-label">Aktif Tarama</div></div>
+      <div class="stat"><div class="stat-value" style="color:var(--green)">${remaining}</div><div class="stat-label">Kalan Kota</div></div>
+      <div class="stat"><div class="stat-value" style="color:var(--yellow)">${data.total_findings}</div><div class="stat-label">Toplam Bulgu</div></div>
+      <div class="stat"><div class="stat-value" style="color:var(--red)">${data.critical_findings}</div><div class="stat-label">Kritik Bulgu</div></div>
+      <div class="stat"><div class="stat-value" style="color:var(--orange)">${data.high_findings}</div><div class="stat-label">Yuksek Bulgu</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Son Taramalar</div>
+      <table>
+        <thead><tr><th>Hedef</th><th>Durum</th><th>Bulgular</th><th>Tarih</th></tr></thead>
+        <tbody>${scansHtml}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ── New Scan ─────────────────────────────────────────────────
+function renderNewScan() {
+  return `
+    <div class="page-header">
+      <div class="page-title">Yeni Tarama Baslat</div>
+    </div>
+    <div class="card" style="max-width:600px">
+      <form id="scanForm">
+        <div class="form-group">
+          <label>Hedef URL / IP</label>
+          <input class="form-control" name="target" required placeholder="https://example.com" autofocus>
+        </div>
+        <div class="form-group">
+          <label>Tarama Tipi</label>
+          <select class="form-control" name="scan_type" id="scanType">
+            <option value="single">Tek Modul</option>
+            <option value="profile" selected>Profil (Paket)</option>
+            <option value="full">Tam Tarama</option>
+          </select>
+        </div>
+        <div class="form-group" id="profileGroup">
+          <label>Profil</label>
+          <select class="form-control" name="profile">
+            <option value="web">Web Tarama</option>
+            <option value="osint">OSINT</option>
+            <option value="vuln">Guvenlik Acigi</option>
+            <option value="network">Ag Kesif</option>
+            <option value="full">Tam (v1)</option>
+            <option value="full-v2">Tam v2 (41 Modul)</option>
+          </select>
+        </div>
+        <div class="form-group" id="moduleGroup" style="display:none">
+          <label>Modul ID (virgul ile ayirin)</label>
+          <input class="form-control" name="module_ids" placeholder="1,5,14,23">
+        </div>
+        <div style="display:flex;gap:12px">
+          <div class="form-group" style="flex:1">
+            <label>Timeout (sn)</label>
+            <input class="form-control" name="timeout" type="number" value="8" min="1" max="60">
+          </div>
+          <div class="form-group" style="flex:1">
+            <label style="display:flex;align-items:center;gap:8px;margin-top:24px">
+              <input type="checkbox" name="turbo" id="turboCheck"> Turbo Mod
+            </label>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:8px" type="submit">Taramayi Baslat</button>
+      </form>
+    </div>
+  `;
+}
+
+// ── Scan List ────────────────────────────────────────────────
+async function renderScanList() {
+  let data;
+  try { data = await api('/scans?per_page=50'); }
+  catch { return '<p>Taramalar yuklenemedi.</p>'; }
+
+  if (!data.scans.length) {
+    return `
+      <div class="page-header"><div class="page-title">Taramalarim</div></div>
+      <div class="empty"><p>Henuz hic tarama yapmadiniz.</p><button class="btn btn-primary" onclick="navigate('/new-scan')">Ilk Taramani Baslat</button></div>
+    `;
+  }
+
+  const rows = data.scans.map(s => `
+    <tr onclick="navigate('/scan/${s.id}')" style="cursor:pointer">
+      <td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.target)}</td>
+      <td><span class="badge badge-${s.status}">${s.status}</span></td>
+      <td>${s.scan_type}${s.profile?' / '+s.profile:''}</td>
+      <td>
+        ${s.critical_count?`<span class="sev-critical">${s.critical_count}</span>/`:''}
+        ${s.high_count?`<span class="sev-high">${s.high_count}</span>/`:''}
+        ${s.total_findings} bulgu
+      </td>
+      <td>${s.risk_score.toFixed(1)}</td>
+      <td style="color:var(--muted)">${timeAgo(s.created_at)}</td>
+    </tr>
+  `).join('');
+
+  return `
+    <div class="page-header">
+      <div class="page-title">Taramalarim (${data.total})</div>
+      <button class="btn btn-primary" onclick="navigate('/new-scan')">+ Yeni Tarama</button>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Hedef</th><th>Durum</th><th>Tip</th><th>Bulgular</th><th>Risk</th><th>Tarih</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ── Scan Detail ──────────────────────────────────────────────
+async function renderScanDetail(id) {
+  let scan;
+  try { scan = await api(`/scans/${id}`); }
+  catch { return '<p>Tarama bulunamadi.</p>'; }
+
+  const riskColor = scan.risk_score >= 7 ? 'var(--red)' : scan.risk_score >= 4 ? 'var(--orange)' : scan.risk_score >= 2 ? 'var(--yellow)' : 'var(--green)';
+
+  let findingsHtml = '';
+  if (scan.results) {
+    const allFindings = [];
+    for (const [modName, result] of Object.entries(scan.results)) {
+      if (result && result.findings) {
+        for (const f of result.findings) {
+          allFindings.push({ ...f, _module: modName });
+        }
+      }
+    }
+    const sevOrder = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
+    allFindings.sort((a, b) => (sevOrder[a.severity]||4) - (sevOrder[b.severity]||4));
+
+    findingsHtml = allFindings.length ? allFindings.map(f => `
+      <div class="finding ${f.severity}">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span class="badge badge-${f.severity === 'critical'||f.severity === 'high'?'failed':f.severity === 'medium'?'pending':'completed'}" style="font-size:.7rem">${f.severity.toUpperCase()}</span>
+          <strong style="font-size:.9rem">${esc(f.title)}</strong>
+          <span style="margin-left:auto;font-size:.75rem;color:var(--muted)">${esc(f._module)}</span>
+        </div>
+        <div style="font-size:.82rem;color:var(--muted)">${esc(f.detail||'')}</div>
+      </div>
+    `).join('') : '<p style="color:var(--muted);text-align:center;padding:20px">Bulgu tespit edilmedi.</p>';
+  } else if (scan.status === 'running' || scan.status === 'pending') {
+    findingsHtml = '<p style="color:var(--cyan);text-align:center;padding:20px">Tarama devam ediyor...</p>';
+  }
+
+  const reportBtns = scan.status === 'completed' ? `
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <a class="btn btn-ghost btn-sm" href="/api/scans/${id}/report/html" target="_blank">HTML Rapor</a>
+      <a class="btn btn-ghost btn-sm" href="/api/scans/${id}/report/json" target="_blank">JSON Rapor</a>
+      <a class="btn btn-ghost btn-sm" href="/api/scans/${id}/report/pdf" target="_blank">PDF Rapor</a>
+    </div>
+  ` : '';
+
+  const autoRefresh = (scan.status === 'running' || scan.status === 'pending')
+    ? `<script>setTimeout(()=>navigate('/scan/${id}'),5000)<\/script>` : '';
+
+  return `
+    <div class="page-header">
+      <div>
+        <div class="page-title">${esc(scan.target)}</div>
+        <div style="color:var(--muted);font-size:.85rem;margin-top:4px">
+          <span class="badge badge-${scan.status}">${scan.status}</span>
+          &nbsp; ${scan.scan_type}${scan.profile?' / '+scan.profile:''} &nbsp; ${timeAgo(scan.created_at)}
+        </div>
+      </div>
+      <button class="btn btn-ghost" onclick="navigate('/scans')">Geri</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value" style="color:${riskColor}">${scan.risk_score.toFixed(1)}</div>
+        <div class="stat-label">Risk Skoru</div>
+        <div class="risk-meter"><div class="risk-fill" style="width:${scan.risk_score*10}%;background:${riskColor}"></div></div>
+      </div>
+      <div class="stat"><div class="stat-value sev-critical">${scan.critical_count}</div><div class="stat-label">Kritik</div></div>
+      <div class="stat"><div class="stat-value sev-high">${scan.high_count}</div><div class="stat-label">Yuksek</div></div>
+      <div class="stat"><div class="stat-value sev-medium">${scan.medium_count}</div><div class="stat-label">Orta</div></div>
+      <div class="stat"><div class="stat-value sev-low">${scan.low_count}</div><div class="stat-label">Dusuk</div></div>
+      <div class="stat"><div class="stat-value" style="color:var(--accent)">${scan.total_findings}</div><div class="stat-label">Toplam</div></div>
+    </div>
+
+    ${reportBtns}
+
+    <div class="card" style="margin-top:20px">
+      <div class="card-title">Bulgular (${scan.total_findings})</div>
+      ${findingsHtml}
+    </div>
+    ${autoRefresh}
+  `;
+}
+
+// ── Settings ─────────────────────────────────────────────────
+function renderSettings() {
+  const u = currentUser;
+  return `
+    <div class="page-header"><div class="page-title">Hesap Ayarlari</div></div>
+    <div class="card" style="max-width:500px">
+      <div class="card-title">API Anahtari</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="form-control" value="${u.api_key}" readonly id="apiKeyInput" style="font-family:monospace;font-size:.82rem">
+        <button class="btn btn-ghost btn-sm" onclick="copyApiKey()">Kopyala</button>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="regenApiKey()">Yeniden Olustur</button>
+    </div>
+    <div class="card" style="max-width:500px">
+      <div class="card-title">API Kullanimi</div>
+      <pre style="background:var(--bg);padding:14px;border-radius:8px;font-size:.78rem;overflow-x:auto;color:var(--cyan)">
+# Tarama baslat
+curl -X POST ${location.origin}/api/scans \\
+  -H "Authorization: Bearer ${u.api_key}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"target":"https://example.com","scan_type":"profile","profile":"web"}'
+
+# Sonuc goruntule
+curl ${location.origin}/api/scans/SCAN_ID \\
+  -H "Authorization: Bearer ${u.api_key}"
+      </pre>
+    </div>
+  `;
+}
+
+// ── Plans ────────────────────────────────────────────────────
+async function renderPlans() {
+  let plans;
+  try { plans = await api('/plans'); } catch { return '<p>Planlar yuklenemedi</p>'; }
+  const cards = Object.entries(plans).map(([key, p]) => `
+    <div class="plan-card ${currentUser.plan === key ? 'current' : ''}">
+      <div style="font-size:1.2rem;font-weight:700">${p.name}</div>
+      <div class="plan-price">$${p.price_monthly}<span>/ay</span></div>
+      <div style="text-align:left;font-size:.85rem;color:var(--muted);line-height:2">
+        <div>${p.scans_per_month === -1 ? 'Sinirsiz' : p.scans_per_month} tarama/ay</div>
+        <div>${p.max_modules_per_scan} modul/tarama</div>
+        <div>Profiller: ${p.allowed_profiles.join(', ')}</div>
+        <div>Turbo: ${p.turbo ? 'Var' : 'Yok'}</div>
+        <div>API: ${p.api_access ? 'Var' : 'Yok'}</div>
+        <div>Raporlar: ${p.report_formats.join(', ')}</div>
+      </div>
+      ${currentUser.plan === key
+        ? '<button class="btn btn-ghost" style="width:100%;margin-top:16px" disabled>Mevcut Plan</button>'
+        : '<button class="btn btn-primary" style="width:100%;margin-top:16px" disabled>Yakinda</button>'}
+    </div>
+  `).join('');
+
+  return `
+    <div class="page-header"><div class="page-title">Abonelik Planlari</div></div>
+    <div class="plans-grid">${cards}</div>
+  `;
+}
+
+// ── Event Binding ────────────────────────────────────────────
+function bindEvents() {
+  const scanType = document.getElementById('scanType');
+  if (scanType) {
+    scanType.onchange = () => {
+      const v = scanType.value;
+      document.getElementById('profileGroup').style.display = v === 'profile' ? '' : 'none';
+      document.getElementById('moduleGroup').style.display = v === 'single' ? '' : 'none';
+    };
+  }
+
+  const scanForm = document.getElementById('scanForm');
+  if (scanForm) {
+    scanForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const fd = new FormData(scanForm);
+      const body = {
+        target: fd.get('target'),
+        scan_type: fd.get('scan_type'),
+        timeout: parseInt(fd.get('timeout')) || 8,
+        turbo: document.getElementById('turboCheck')?.checked || false,
+      };
+      if (body.scan_type === 'profile') body.profile = fd.get('profile');
+      if (body.scan_type === 'single' && fd.get('module_ids')) {
+        body.module_ids = fd.get('module_ids').split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+      }
+      try {
+        const scan = await api('/scans', { method: 'POST', body: JSON.stringify(body) });
+        toast('Tarama baslatildi!');
+        navigate(`/scan/${scan.id}`);
+      } catch (err) { toast(err.message, 'error'); }
+    };
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────────────
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function timeAgo(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = (now - d) / 1000;
+  if (diff < 60) return 'az once';
+  if (diff < 3600) return Math.floor(diff/60) + ' dk once';
+  if (diff < 86400) return Math.floor(diff/3600) + ' saat once';
+  return Math.floor(diff/86400) + ' gun once';
+}
+
+async function copyApiKey() {
+  const inp = document.getElementById('apiKeyInput');
+  if (inp) { await navigator.clipboard.writeText(inp.value); toast('API anahtari kopyalandi'); }
+}
+
+async function regenApiKey() {
+  try {
+    const u = await api('/auth/regenerate-api-key', { method: 'POST' });
+    currentUser = u;
+    toast('API anahtari yenilendi');
+    render();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ── Init ─────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>

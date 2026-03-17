@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Maxima Recon — Automated Security Reconnaissance Platform</title>
+<meta name="description" content="41-module automated security scanning platform. Find vulnerabilities before attackers do. SQL injection, XSS, CORS, subdomain takeover, and more.">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f172a;--bg2:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--accent:#6366f1;--accent2:#818cf8;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--border:#334155}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+a{color:var(--accent2);text-decoration:none}
+.container{max-width:1140px;margin:0 auto;padding:0 24px}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(15,23,42,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;max-width:1140px;margin:0 auto}
+.nav-logo{font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,var(--accent),#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{color:var(--muted);font-size:.9rem;font-weight:500;transition:color .15s}
+.nav-links a:hover{color:var(--text)}
+.btn{display:inline-block;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.9rem;border:none;cursor:pointer;transition:all .15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-outline{border:1px solid var(--border);color:var(--text);background:transparent}
+.btn-outline:hover{border-color:var(--accent);background:rgba(99,102,241,.1)}
+.btn-lg{padding:14px 36px;font-size:1rem}
+
+/* Hero */
+.hero{padding:140px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:800px;height:800px;background:radial-gradient(circle,rgba(99,102,241,.12) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-block;padding:6px 16px;border-radius:20px;background:rgba(99,102,241,.15);color:var(--accent2);font-size:.82rem;font-weight:600;margin-bottom:20px;border:1px solid rgba(99,102,241,.25)}
+.hero h1{font-size:3.5rem;font-weight:800;line-height:1.15;margin-bottom:20px;letter-spacing:-.02em}
+.hero h1 span{background:linear-gradient(135deg,var(--accent2),#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.2rem;color:var(--muted);max-width:600px;margin:0 auto 36px}
+.hero-buttons{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.hero-stats{display:flex;gap:48px;justify-content:center;margin-top:56px;flex-wrap:wrap}
+.hero-stat{text-align:center}
+.hero-stat .num{font-size:2.5rem;font-weight:800;color:var(--accent2)}
+.hero-stat .label{font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+
+/* Features */
+.section{padding:80px 0}
+.section-title{text-align:center;margin-bottom:48px}
+.section-title h2{font-size:2.2rem;font-weight:700;margin-bottom:12px}
+.section-title p{color:var(--muted);font-size:1.05rem;max-width:550px;margin:0 auto}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px}
+.feature{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px;transition:all .2s}
+.feature:hover{border-color:var(--accent);transform:translateY(-2px)}
+.feature-icon{width:44px;height:44px;border-radius:10px;background:rgba(99,102,241,.15);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:1.4rem}
+.feature h3{font-size:1.05rem;font-weight:700;margin-bottom:8px}
+.feature p{color:var(--muted);font-size:.88rem;line-height:1.6}
+
+/* Modules */
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.module-tag{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.82rem;display:flex;align-items:center;gap:8px}
+.module-tag .dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+
+/* Pricing */
+.pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:960px;margin:0 auto}
+.price-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:36px 32px;text-align:center;position:relative;transition:all .2s}
+.price-card:hover{border-color:var(--accent)}
+.price-card.popular{border-color:var(--accent);box-shadow:0 0 40px rgba(99,102,241,.15)}
+.price-card.popular::before{content:'EN POPULER';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:4px 16px;border-radius:12px;font-size:.7rem;font-weight:700;letter-spacing:1px}
+.price-name{font-size:1.1rem;font-weight:700;margin-bottom:8px}
+.price-amount{font-size:3rem;font-weight:800;margin:12px 0}
+.price-amount span{font-size:.95rem;font-weight:400;color:var(--muted)}
+.price-desc{color:var(--muted);font-size:.88rem;margin-bottom:24px}
+.price-features{text-align:left;list-style:none;margin-bottom:28px}
+.price-features li{padding:8px 0;font-size:.88rem;color:var(--muted);display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(51,65,85,.5)}
+.price-features li::before{content:'';display:inline-block;width:18px;height:18px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='2.5'%3E%3Cpath d='M20 6L9 17l-5-5'/%3E%3C/svg%3E");flex-shrink:0}
+
+/* How it works */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:32px;counter-reset:step}
+.step{text-align:center;position:relative}
+.step::before{counter-increment:step;content:counter(step);display:flex;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;font-size:1.3rem;font-weight:800;align-items:center;justify-content:center;margin:0 auto 16px}
+.step h3{font-size:1rem;font-weight:700;margin-bottom:8px}
+.step p{color:var(--muted);font-size:.88rem}
+
+/* CTA */
+.cta{text-align:center;padding:80px 0;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(6,182,212,.08));border-radius:20px;margin:40px 0}
+.cta h2{font-size:2rem;font-weight:700;margin-bottom:14px}
+.cta p{color:var(--muted);font-size:1.05rem;margin-bottom:28px}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:40px 0;text-align:center;color:var(--muted);font-size:.85rem}
+footer .links{display:flex;gap:24px;justify-content:center;margin-bottom:16px}
+
+/* Responsive */
+@media(max-width:768px){
+  .hero h1{font-size:2.2rem}
+  .hero-stats{gap:24px}
+  .nav-links a:not(.btn){display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">MAXIMA RECON</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#modules">Modules</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#how">How It Works</a>
+      <a href="/login" class="btn btn-outline" style="padding:8px 18px">Log In</a>
+      <a href="/register" class="btn btn-primary" style="padding:8px 18px">Start Free</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">41 Security Modules &bull; One Platform</div>
+    <h1>Find Vulnerabilities<br>Before <span>Attackers</span> Do</h1>
+    <p>Automated security reconnaissance platform with 41 scanning modules. SQLi, XSS, CORS, subdomain takeover, CVE matching, and more — all from your browser.</p>
+    <div class="hero-buttons">
+      <a href="/register" class="btn btn-primary btn-lg">Start Free &mdash; 5 Scans/Month</a>
+      <a href="#pricing" class="btn btn-outline btn-lg">View Pricing</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">41</div><div class="label">Scan Modules</div></div>
+      <div class="hero-stat"><div class="num">6</div><div class="label">Scan Profiles</div></div>
+      <div class="hero-stat"><div class="num">5</div><div class="label">Severity Levels</div></div>
+      <div class="hero-stat"><div class="num">3</div><div class="label">Report Formats</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-title">
+      <h2>Everything You Need for Security Testing</h2>
+      <p>Enterprise-grade reconnaissance capabilities accessible through a simple web interface</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">&#128269;</div>
+        <h3>Automated Scanning</h3>
+        <p>Launch comprehensive security scans with one click. Choose from 6 scan profiles or pick individual modules for targeted testing.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#9889;</div>
+        <h3>Turbo Mode</h3>
+        <p>Run modules in parallel waves for 3-5x faster results. Smart wave scheduling ensures dependencies are respected.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#128202;</div>
+        <h3>Professional Reports</h3>
+        <p>Generate HTML, PDF, and JSON reports with executive summaries, risk scores, severity charts, and remediation priorities.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#128273;</div>
+        <h3>REST API</h3>
+        <p>Integrate scans into your CI/CD pipeline. Full REST API with JWT and API key authentication for automation.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#128200;</div>
+        <h3>Risk Scoring</h3>
+        <p>Automatic 0-10 risk scoring based on finding severity. Track your security posture over time with scan history.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">&#128737;</div>
+        <h3>Vulnerability Detection</h3>
+        <p>Deep SQLi, XSS, SSRF, SSTI, XXE, IDOR, CORS, JWT flaws, open redirects, clickjacking, and more — all automated.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modules -->
+<section class="section" id="modules" style="background:rgba(30,41,59,.5)">
+  <div class="container">
+    <div class="section-title">
+      <h2>41 Security Scanning Modules</h2>
+      <p>Comprehensive coverage across web, network, OSINT, and vulnerability categories</p>
+    </div>
+    <div class="modules-grid">
+      <div class="module-tag"><span class="dot"></span>Full Recon Scan</div>
+      <div class="module-tag"><span class="dot"></span>Port Scanner</div>
+      <div class="module-tag"><span class="dot"></span>Vulnerability Scanner</div>
+      <div class="module-tag"><span class="dot"></span>SQL Injection</div>
+      <div class="module-tag"><span class="dot"></span>XSS Scanner</div>
+      <div class="module-tag"><span class="dot"></span>LFI/RFI Scanner</div>
+      <div class="module-tag"><span class="dot"></span>Command Injection</div>
+      <div class="module-tag"><span class="dot"></span>SSRF Scanner</div>
+      <div class="module-tag"><span class="dot"></span>Subdomain Enum</div>
+      <div class="module-tag"><span class="dot"></span>Directory Enum</div>
+      <div class="module-tag"><span class="dot"></span>API Fuzzer</div>
+      <div class="module-tag"><span class="dot"></span>CORS Scanner</div>
+      <div class="module-tag"><span class="dot"></span>SSL/TLS Analyzer</div>
+      <div class="module-tag"><span class="dot"></span>HTTP Headers</div>
+      <div class="module-tag"><span class="dot"></span>Tech Detector</div>
+      <div class="module-tag"><span class="dot"></span>JWT Analyzer</div>
+      <div class="module-tag"><span class="dot"></span>Clickjacking</div>
+      <div class="module-tag"><span class="dot"></span>Open Redirect</div>
+      <div class="module-tag"><span class="dot"></span>Subdomain Takeover</div>
+      <div class="module-tag"><span class="dot"></span>Rate Limit Tester</div>
+      <div class="module-tag"><span class="dot"></span>WHOIS Lookup</div>
+      <div class="module-tag"><span class="dot"></span>IP Geolocation</div>
+      <div class="module-tag"><span class="dot"></span>DNS Records</div>
+      <div class="module-tag"><span class="dot"></span>WAF Detector</div>
+      <div class="module-tag"><span class="dot"></span>TLS Prober</div>
+      <div class="module-tag"><span class="dot"></span>JS Secret Scanner</div>
+      <div class="module-tag"><span class="dot"></span>Payload Fuzzing</div>
+      <div class="module-tag"><span class="dot"></span>CVE Matcher</div>
+      <div class="module-tag"><span class="dot"></span>OSINT Engine</div>
+      <div class="module-tag"><span class="dot"></span>Deep SQLi</div>
+      <div class="module-tag"><span class="dot"></span>SSTI + XXE + IDOR</div>
+      <div class="module-tag"><span class="dot"></span>Advanced Reporter</div>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section" id="how">
+  <div class="container">
+    <div class="section-title">
+      <h2>How It Works</h2>
+      <p>Get started in under 60 seconds</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3>Create Account</h3>
+        <p>Sign up for free. No credit card required. Get 5 scans per month instantly.</p>
+      </div>
+      <div class="step">
+        <h3>Enter Target</h3>
+        <p>Enter the URL or IP address you want to scan. Choose a scan profile or individual modules.</p>
+      </div>
+      <div class="step">
+        <h3>Review Results</h3>
+        <p>View findings sorted by severity. Download professional HTML, PDF, or JSON reports.</p>
+      </div>
+      <div class="step">
+        <h3>Fix & Rescan</h3>
+        <p>Follow remediation recommendations. Rescan to verify fixes and track improvement.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="section" id="pricing" style="background:rgba(30,41,59,.5)">
+  <div class="container">
+    <div class="section-title">
+      <h2>Simple, Transparent Pricing</h2>
+      <p>Start free, upgrade when you need more power</p>
+    </div>
+    <div class="pricing">
+      <div class="price-card">
+        <div class="price-name">Free</div>
+        <div class="price-amount">$0<span>/month</span></div>
+        <div class="price-desc">Perfect for learning and small projects</div>
+        <ul class="price-features">
+          <li>5 scans per month</li>
+          <li>20 scan modules</li>
+          <li>Web scan profile</li>
+          <li>HTML reports</li>
+          <li>Dashboard access</li>
+        </ul>
+        <a href="/register" class="btn btn-outline" style="width:100%">Get Started Free</a>
+      </div>
+      <div class="price-card popular">
+        <div class="price-name">Pro</div>
+        <div class="price-amount">$49<span>/month</span></div>
+        <div class="price-desc">For security professionals and teams</div>
+        <ul class="price-features">
+          <li>100 scans per month</li>
+          <li>All 41 modules</li>
+          <li>All scan profiles</li>
+          <li>Turbo mode (3-5x faster)</li>
+          <li>HTML + PDF + JSON reports</li>
+          <li>REST API access</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="/register" class="btn btn-primary" style="width:100%">Start Pro Trial</a>
+      </div>
+      <div class="price-card">
+        <div class="price-name">Enterprise</div>
+        <div class="price-amount">$199<span>/month</span></div>
+        <div class="price-desc">For organizations with high-volume needs</div>
+        <ul class="price-features">
+          <li>Unlimited scans</li>
+          <li>All 41 modules</li>
+          <li>All profiles + full-v2</li>
+          <li>Turbo mode</li>
+          <li>All report formats</li>
+          <li>REST API access</li>
+          <li>Dedicated support</li>
+          <li>Custom integrations</li>
+        </ul>
+        <a href="/register" class="btn btn-outline" style="width:100%">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="container">
+    <h2>Ready to Secure Your Applications?</h2>
+    <p>Join security professionals who trust Maxima for automated reconnaissance.</p>
+    <a href="/register" class="btn btn-primary btn-lg">Start Free — No Credit Card Required</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="links">
+      <a href="/api/docs">API Docs</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#features">Features</a>
+      <a href="/login">Login</a>
+    </div>
+    <p>&copy; 2026 Maxima Recon. Authorized security testing only.</p>
+  </div>
+</footer>
+
+</body>
+</html>

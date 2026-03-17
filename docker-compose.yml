@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  maxima:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # ── Zorunlu (production icin degistir) ──
+      - SECRET_KEY=${SECRET_KEY:-maxima-production-secret-key-change-me}
+      - DATABASE_URL=sqlite:////app/data/maxima_saas.db
+
+      # ── Stripe (odeme icin gerekli) ──
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY:-}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
+      - STRIPE_PRICE_PRO=${STRIPE_PRICE_PRO:-}
+      - STRIPE_PRICE_ENTERPRISE=${STRIPE_PRICE_ENTERPRISE:-}
+
+      # ── Site ──
+      - SITE_URL=${SITE_URL:-https://yourdomain.com}
+      - MAX_CONCURRENT_SCANS=5
+    volumes:
+      - maxima-data:/app/data
+      - maxima-reports:/app/saas_reports
+    restart: unless-stopped
+
+volumes:
+  maxima-data:
+  maxima-reports:

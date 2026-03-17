@@ -1,0 +1,20 @@
+# Maxima Recon Framework v11.0 — Bağımlılıklar
+# Kurulum: pip install -r requirements.txt
+
+# ── Zorunlu ───────────────────────────────────────────────────
+colorama>=0.4.6          # Renkli terminal çıktısı (compat.py shim — opsiyonel ama önerilir)
+
+# ── Test ──────────────────────────────────────────────────────
+pytest>=7.0.0            # Test çerçevesi
+pytest-timeout>=2.0.0    # Test başına timeout sınırı
+pytest-cov>=4.0.0        # Kod kapsam ölçümü (coverage.py entegrasyonu)
+
+# ── Opsiyonel — Modül 41 grafik ───────────────────────────────
+matplotlib>=3.5.0        # Bulgu dağılımı grafikleri (HAS_MPL flag ile kontrol edilir)
+numpy>=1.22.0            # matplotlib bağımlılığı
+
+# ── Opsiyonel — PDF rapor ─────────────────────────────────────
+reportlab>=3.6.0         # PDF rapor üretimi (HAS_REPORTLAB flag ile kontrol edilir)
+
+# ── Opsiyonel — Ekran görüntüsü (Modül 32) ───────────────────
+# playwright>=1.30.0     # Gerçek screenshot için (pip install playwright && playwright install chromium)
