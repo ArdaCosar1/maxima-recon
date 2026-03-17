@@ -3,143 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Maxima SaaS — Security Reconnaissance Platform</title>
+<title>Maxima Recon — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0f172a;--bg2:#1e293b;--bg3:#334155;
-  --text:#f1f5f9;--muted:#94a3b8;--border:#475569;
-  --accent:#6366f1;--accent2:#818cf8;
-  --green:#22c55e;--red:#ef4444;--yellow:#eab308;--orange:#f97316;--cyan:#06b6d4;
-  --radius:10px;
+  --bg:#0a0a12;
+  --bg2:#12121e;
+  --bg3:#1a1a2e;
+  --surface:#16162a;
+  --surface2:#1e1e36;
+  --text:#e2e4ed;
+  --text2:#c4c6d4;
+  --muted:#6b6d85;
+  --purple:#8b5cf6;
+  --purple-light:#a78bfa;
+  --purple-dark:#7c3aed;
+  --blue:#38bdf8;
+  --blue-light:#7dd3fc;
+  --green:#34d399;
+  --red:#ef4444;
+  --yellow:#eab308;
+  --orange:#f97316;
+  --cyan:#22d3ee;
+  --border:rgba(139,92,246,.1);
+  --border2:rgba(255,255,255,.06);
+  --radius:12px;
 }
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-a{color:var(--accent2);text-decoration:none}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5}
+a{color:inherit;text-decoration:none}
 button{cursor:pointer;border:none;font-family:inherit}
-input,select{font-family:inherit;font-size:.9rem}
+input,select,textarea{font-family:inherit}
 
-/* Layout */
+/* ── Layout ── */
 .app{display:flex;min-height:100vh}
-.sidebar{width:260px;background:var(--bg2);border-right:1px solid var(--border);padding:20px 0;display:flex;flex-direction:column;position:fixed;height:100vh;z-index:10}
-.main{margin-left:260px;flex:1;padding:30px 40px;min-height:100vh}
+.sidebar{width:250px;background:var(--bg2);border-right:1px solid var(--border2);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:10}
+.main{margin-left:250px;flex:1;padding:32px 40px;min-height:100vh}
 
-/* Sidebar */
-.logo{padding:0 24px 24px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
-.logo svg{width:32px;height:32px}
-.logo-text{font-size:1.3rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.logo-sub{font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
-.nav{flex:1;padding:16px 12px}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;color:var(--muted);font-size:.88rem;font-weight:500;transition:all .15s;margin-bottom:2px;cursor:pointer}
-.nav-item:hover,.nav-item.active{background:var(--bg3);color:var(--text)}
-.nav-item.active{color:var(--accent2);background:rgba(99,102,241,.15)}
-.nav-section{font-size:.7rem;color:var(--border);text-transform:uppercase;letter-spacing:1px;padding:14px 14px 6px;font-weight:700}
-.user-box{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
-.user-info{flex:1}
-.user-name{font-size:.85rem;font-weight:600}
-.user-plan{font-size:.7rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.5px}
-.btn-logout{background:transparent;color:var(--muted);font-size:.78rem;padding:4px 8px;border-radius:6px}
-.btn-logout:hover{background:var(--bg3);color:var(--red)}
+/* ── Sidebar ── */
+.sb-logo{padding:22px 22px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border2)}
+.sb-logo svg{width:26px;height:26px;flex-shrink:0}
+.sb-logo-text{font-size:1.1rem;font-weight:800;background:linear-gradient(135deg,var(--purple-light),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sb-logo-sub{font-size:.6rem;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;font-weight:500}
 
-/* Cards */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px;margin-bottom:20px}
-.card-title{font-size:.82rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:14px}
+.sb-nav{flex:1;padding:16px 10px;overflow-y:auto}
+.sb-section{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;padding:16px 14px 6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:8px;color:var(--muted);font-size:.84rem;font-weight:500;transition:all .15s;cursor:pointer;margin-bottom:1px}
+.sb-item:hover{background:rgba(255,255,255,.03);color:var(--text2)}
+.sb-item.active{background:rgba(139,92,246,.1);color:var(--purple-light)}
+.sb-item svg{width:17px;height:17px;flex-shrink:0;opacity:.7}
+.sb-item.active svg{opacity:1}
 
-/* Stat Grid */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
-.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-.stat-value{font-size:2rem;font-weight:800;line-height:1}
-.stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:6px}
+.sb-user{padding:14px 16px;border-top:1px solid var(--border2);display:flex;align-items:center;gap:10px}
+.sb-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--purple),var(--blue-light));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:#fff}
+.sb-uinfo{flex:1;min-width:0}
+.sb-uname{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-uplan{font-size:.65rem;color:var(--purple-light);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.sb-logout{background:transparent;color:var(--muted);font-size:.72rem;padding:4px 8px;border-radius:6px;transition:all .15s}
+.sb-logout:hover{color:var(--red);background:rgba(239,68,68,.08)}
 
-/* Buttons */
-.btn{padding:10px 20px;border-radius:8px;font-weight:600;font-size:.88rem;transition:all .15s}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:var(--accent2)}
-.btn-danger{background:var(--red);color:#fff}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
-.btn-ghost:hover{background:var(--bg3)}
-.btn-sm{padding:6px 14px;font-size:.8rem}
+/* ── Cards ── */
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:22px 24px;margin-bottom:18px}
+.card-head{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
 
-/* Table */
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:22px}
+.stat{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);padding:18px 20px;transition:all .2s}
+.stat:hover{border-color:var(--border)}
+.stat-val{font-size:1.7rem;font-weight:800;line-height:1;margin-bottom:4px}
+.stat-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:500}
+
+/* ── Buttons ── */
+.btn{padding:9px 20px;border-radius:8px;font-weight:600;font-size:.84rem;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--purple-dark));color:#fff;box-shadow:0 2px 12px rgba(139,92,246,.2)}
+.btn-primary:hover{box-shadow:0 4px 20px rgba(139,92,246,.35);transform:translateY(-1px)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--purple);background:rgba(139,92,246,.06)}
+.btn-sm{padding:6px 14px;font-size:.78rem}
+
+/* ── Table ── */
 table{width:100%;border-collapse:collapse}
-th{text-align:left;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;padding:10px 14px;border-bottom:1px solid var(--border);font-weight:700}
-td{padding:12px 14px;border-bottom:1px solid rgba(71,85,105,.3);font-size:.88rem}
-tr:hover td{background:rgba(99,102,241,.04)}
+th{text-align:left;font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:10px 14px;border-bottom:1px solid var(--border2);font-weight:600}
+td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.03);font-size:.84rem}
+tr{transition:background .1s}
+tr:hover td{background:rgba(139,92,246,.02)}
 
-/* Status badges */
-.badge{display:inline-block;padding:3px 10px;border-radius:12px;font-size:.72rem;font-weight:700;letter-spacing:.3px}
-.badge-pending{background:rgba(234,179,8,.15);color:var(--yellow)}
-.badge-running{background:rgba(6,182,212,.15);color:var(--cyan);animation:pulse 1.5s infinite}
-.badge-completed{background:rgba(34,197,94,.15);color:var(--green)}
-.badge-failed{background:rgba(239,68,68,.15);color:var(--red)}
-.badge-cancelled{background:rgba(148,163,184,.15);color:var(--muted)}
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:6px;font-size:.7rem;font-weight:600;letter-spacing:.3px}
+.badge-pending{background:rgba(234,179,8,.08);color:var(--yellow)}
+.badge-running{background:rgba(56,189,248,.08);color:var(--blue);animation:pulse 2s infinite}
+.badge-completed{background:rgba(52,211,153,.08);color:var(--green)}
+.badge-failed{background:rgba(239,68,68,.08);color:var(--red)}
+.badge-cancelled{background:rgba(107,109,133,.1);color:var(--muted)}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
 
 .sev-critical{color:var(--red);font-weight:700}
 .sev-high{color:var(--orange);font-weight:700}
 .sev-medium{color:var(--yellow);font-weight:600}
-.sev-low{color:var(--cyan)}
+.sev-low{color:var(--blue)}
 .sev-info{color:var(--muted)}
 
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
-/* Forms */
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:6px;font-weight:600}
-.form-control{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.9rem;outline:none;transition:border .15s}
-.form-control:focus{border-color:var(--accent)}
-select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+/* ── Forms ── */
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:5px;font-weight:600}
+.form-input{width:100%;padding:10px 14px;background:var(--bg);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:.88rem;outline:none;transition:border .2s}
+.form-input:focus{border-color:var(--purple)}
+select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6d85' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
 
-/* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:flex;align-items:center;justify-content:center}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:32px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
-.modal-title{font-size:1.2rem;font-weight:700;margin-bottom:20px}
+/* ── Auth ── */
+.auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);position:relative}
+.auth-page::before{content:'';position:absolute;top:20%;left:30%;width:400px;height:400px;background:radial-gradient(circle,rgba(139,92,246,.06),transparent 70%);pointer-events:none}
+.auth-page::after{content:'';position:absolute;bottom:20%;right:30%;width:300px;height:300px;background:radial-gradient(circle,rgba(56,189,248,.04),transparent 70%);pointer-events:none}
+.auth-box{width:100%;max-width:400px;padding:20px;position:relative;z-index:1}
+.auth-logo{text-align:center;margin-bottom:36px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.auth-logo svg{width:40px;height:40px}
+.auth-logo-text{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--purple-light),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.auth-tabs{display:flex;gap:6px;margin-bottom:22px}
+.auth-tab{flex:1;padding:9px;border-radius:8px;text-align:center;font-size:.84rem;font-weight:600;transition:all .2s;cursor:pointer}
+.auth-tab.active{background:rgba(139,92,246,.12);color:var(--purple-light)}
+.auth-tab:not(.active){color:var(--muted);background:var(--surface)}
+.auth-tab:not(.active):hover{color:var(--text2)}
 
-/* Auth Page */
-.auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
-.auth-box{width:100%;max-width:420px;padding:20px}
-.auth-logo{text-align:center;margin-bottom:32px}
-.auth-logo .logo-text{font-size:2rem}
+/* ── Toast ── */
+.toast{position:fixed;top:20px;right:20px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 20px;z-index:200;font-size:.84rem;display:none;animation:toastIn .3s;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid var(--red)}
+@keyframes toastIn{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
 
-/* Toast */
-.toast{position:fixed;top:20px;right:20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 20px;z-index:200;font-size:.88rem;display:none;animation:slideIn .3s}
-.toast.success{border-left:4px solid var(--green)}
-.toast.error{border-left:4px solid var(--red)}
-@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+/* ── Page ── */
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.page-title{font-size:1.35rem;font-weight:700;letter-spacing:-.3px}
 
-/* Page header */
-.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-.page-title{font-size:1.5rem;font-weight:700}
+/* ── Risk ── */
+.risk-bar{width:100%;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;margin-top:8px}
+.risk-fill{height:100%;border-radius:3px;transition:width .6s ease}
 
-/* Risk meter */
-.risk-meter{width:100%;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:8px}
-.risk-fill{height:100%;border-radius:4px;transition:width .5s}
-
-/* Finding card */
-.finding{background:var(--bg);border-radius:8px;padding:14px 16px;margin-bottom:8px;border-left:3px solid var(--border)}
+/* ── Finding ── */
+.finding{background:var(--bg);border-radius:10px;padding:14px 16px;margin-bottom:8px;border-left:3px solid var(--border2);transition:all .15s}
+.finding:hover{background:var(--surface2)}
 .finding.critical{border-left-color:var(--red)}
 .finding.high{border-left-color:var(--orange)}
 .finding.medium{border-left-color:var(--yellow)}
-.finding.low{border-left-color:var(--cyan)}
+.finding.low{border-left-color:var(--blue)}
 
-/* Plan cards */
-.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-.plan-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px;text-align:center;transition:all .2s}
-.plan-card:hover{border-color:var(--accent)}
-.plan-card.current{border-color:var(--accent);box-shadow:0 0 20px rgba(99,102,241,.15)}
-.plan-price{font-size:2.5rem;font-weight:800;margin:12px 0}
-.plan-price span{font-size:.9rem;font-weight:400;color:var(--muted)}
+/* ── Plans ── */
+.plans-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.plan-card{background:var(--surface);border:1px solid var(--border2);border-radius:14px;padding:28px;text-align:center;transition:all .25s}
+.plan-card:hover{border-color:rgba(139,92,246,.2)}
+.plan-card.current{border-color:var(--purple);box-shadow:0 0 30px rgba(139,92,246,.08)}
+.plan-price{font-size:2.2rem;font-weight:800;margin:12px 0}
+.plan-price span{font-size:.85rem;font-weight:400;color:var(--muted)}
 
-/* Responsive */
+/* ── Empty ── */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty p{margin-bottom:18px;font-size:.9rem}
+
+/* ── Responsive ── */
 @media(max-width:768px){
   .sidebar{display:none}
   .main{margin-left:0;padding:16px}
   .stats{grid-template-columns:repeat(2,1fr)}
 }
-
-/* Empty state */
-.empty{text-align:center;padding:60px 20px;color:var(--muted)}
-.empty svg{width:64px;height:64px;margin-bottom:16px;opacity:.3}
-.empty p{margin-bottom:20px}
 </style>
 </head>
 <body>
@@ -148,15 +176,10 @@ select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3C
 <div id="toast" class="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-//  MAXIMA SAAS — SINGLE PAGE APPLICATION
-// ══════════════════════════════════════════════════════════════
-
 const API = '/api';
 let currentUser = null;
 let token = localStorage.getItem('mx_token');
 
-// ── API Helper ───────────────────────────────────────────────
 async function api(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -164,7 +187,7 @@ async function api(path, opts = {}) {
   const data = await res.json();
   if (!res.ok) {
     if (res.status === 401) { logout(); return null; }
-    throw new Error(data.detail || 'API hatasi');
+    throw new Error(data.detail || 'API error');
   }
   return data;
 }
@@ -177,15 +200,11 @@ function toast(msg, type = 'success') {
   setTimeout(() => el.style.display = 'none', 3500);
 }
 
-// ── Auth ─────────────────────────────────────────────────────
+// ── Auth ──
 async function doLogin(username, password) {
   try {
-    const data = await api('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ username, password }),
-    });
-    token = data.access_token;
-    currentUser = data.user;
+    const data = await api('/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) });
+    token = data.access_token; currentUser = data.user;
     localStorage.setItem('mx_token', token);
     toast('Giris basarili!');
     navigate('/dashboard');
@@ -194,12 +213,8 @@ async function doLogin(username, password) {
 
 async function doRegister(email, username, password) {
   try {
-    const data = await api('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, username, password }),
-    });
-    token = data.access_token;
-    currentUser = data.user;
+    const data = await api('/auth/register', { method: 'POST', body: JSON.stringify({ email, username, password }) });
+    token = data.access_token; currentUser = data.user;
     localStorage.setItem('mx_token', token);
     toast('Kayit basarili!');
     navigate('/dashboard');
@@ -214,18 +229,12 @@ function logout() {
 
 async function checkAuth() {
   if (!token) return false;
-  try {
-    currentUser = await api('/auth/me');
-    return !!currentUser;
-  } catch { return false; }
+  try { currentUser = await api('/auth/me'); return !!currentUser; }
+  catch { return false; }
 }
 
-// ── Router ───────────────────────────────────────────────────
-function navigate(path) {
-  history.pushState(null, '', path);
-  render();
-}
-
+// ── Router ──
+function navigate(path) { history.pushState(null, '', path); render(); }
 window.addEventListener('popstate', render);
 
 async function render() {
@@ -238,14 +247,10 @@ async function render() {
     return;
   }
 
-  if (!await checkAuth()) {
-    navigate('/login');
-    return;
-  }
+  if (!await checkAuth()) { navigate('/login'); return; }
 
   if (path.startsWith('/scan/')) {
-    const id = path.split('/scan/')[1];
-    app.innerHTML = renderLayout(await renderScanDetail(id));
+    app.innerHTML = renderLayout(await renderScanDetail(path.split('/scan/')[1]));
   } else if (path === '/new-scan') {
     app.innerHTML = renderLayout(renderNewScan());
   } else if (path === '/scans') {
@@ -257,86 +262,74 @@ async function render() {
   } else {
     app.innerHTML = renderLayout(await renderDashboard());
   }
-
   bindEvents();
 }
 
-// ── Layout ───────────────────────────────────────────────────
+// ── Layout ──
 function renderLayout(content) {
   const path = location.pathname;
   const u = currentUser;
-  const initial = u ? u.username[0].toUpperCase() : '?';
+  const ini = u ? u.username[0].toUpperCase() : '?';
+  const nav = (p, label, icon) =>
+    `<div class="sb-item ${path===p?'active':''}" onclick="navigate('${p}')">${icon} ${label}</div>`;
+
   return `
   <div class="app">
     <div class="sidebar">
-      <div class="logo">
-        <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#6366f1"/><path d="M8 24V8l8 8 8-8v16" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <div><div class="logo-text">MAXIMA</div><div class="logo-sub">SaaS Platform</div></div>
+      <div class="sb-logo">
+        <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="url(#sg)"/><path d="M7 21V7l7 7 7-7v14" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="sg" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#8b5cf6"/><stop offset="1" stop-color="#38bdf8"/></linearGradient></defs></svg>
+        <div><div class="sb-logo-text">MAXIMA</div><div class="sb-logo-sub">Recon Platform</div></div>
       </div>
-      <div class="nav">
-        <div class="nav-section">Ana Menu</div>
-        <div class="nav-item ${path==='/dashboard'||path==='/'?'active':''}" onclick="navigate('/dashboard')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-          Dashboard
-        </div>
-        <div class="nav-item ${path==='/new-scan'?'active':''}" onclick="navigate('/new-scan')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          Yeni Tarama
-        </div>
-        <div class="nav-item ${path==='/scans'?'active':''}" onclick="navigate('/scans')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-          Taramalarim
-        </div>
-        <div class="nav-section">Hesap</div>
-        <div class="nav-item ${path==='/plans'?'active':''}" onclick="navigate('/plans')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-          Planlar
-        </div>
-        <div class="nav-item ${path==='/settings'?'active':''}" onclick="navigate('/settings')">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-          Ayarlar
-        </div>
+      <div class="sb-nav">
+        <div class="sb-section">Menu</div>
+        ${nav('/dashboard','Dashboard','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>')}
+        ${nav('/new-scan','Yeni Tarama','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>')}
+        ${nav('/scans','Taramalarim','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>')}
+        <div class="sb-section">Account</div>
+        ${nav('/plans','Planlar','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>')}
+        ${nav('/settings','Ayarlar','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>')}
       </div>
-      <div class="user-box">
-        <div class="user-avatar">${initial}</div>
-        <div class="user-info">
-          <div class="user-name">${u?.username||''}</div>
-          <div class="user-plan">${u?.plan||'free'} plan</div>
+      <div class="sb-user">
+        <div class="sb-avatar">${ini}</div>
+        <div class="sb-uinfo">
+          <div class="sb-uname">${u?.username||''}</div>
+          <div class="sb-uplan">${u?.plan||'free'}</div>
         </div>
-        <button class="btn-logout" onclick="logout()">Cikis</button>
+        <button class="sb-logout" onclick="logout()">Cikis</button>
       </div>
     </div>
     <div class="main">${content}</div>
   </div>`;
 }
 
-// ── Auth Pages ───────────────────────────────────────────────
+// ── Auth ──
 function renderAuth(path) {
   const isLogin = path === '/login';
   return `
   <div class="auth-page">
     <div class="auth-box">
       <div class="auth-logo">
-        <div class="logo-text" style="font-size:2.5rem">MAXIMA</div>
-        <div style="color:var(--muted);font-size:.85rem;margin-top:4px">Security Reconnaissance Platform</div>
+        <svg viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="7" fill="url(#ag)"/><path d="M7 21V7l7 7 7-7v14" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="ag" x1="0" y1="0" x2="28" y2="28"><stop stop-color="#8b5cf6"/><stop offset="1" stop-color="#38bdf8"/></linearGradient></defs></svg>
+        <div class="auth-logo-text">MAXIMA</div>
+        <div style="color:var(--muted);font-size:.8rem;margin-top:-6px">Security Reconnaissance Platform</div>
       </div>
-      <div class="card">
-        <div style="display:flex;gap:8px;margin-bottom:20px">
-          <button class="btn ${isLogin?'btn-primary':'btn-ghost'}" style="flex:1" onclick="navigate('/login')">Giris Yap</button>
-          <button class="btn ${!isLogin?'btn-primary':'btn-ghost'}" style="flex:1" onclick="navigate('/register')">Kayit Ol</button>
+      <div class="card" style="border:1px solid var(--border2)">
+        <div class="auth-tabs">
+          <div class="auth-tab ${isLogin?'active':''}" onclick="navigate('/login')">Giris Yap</div>
+          <div class="auth-tab ${!isLogin?'active':''}" onclick="navigate('/register')">Kayit Ol</div>
         </div>
         <form id="authForm">
-          ${!isLogin ? '<div class="form-group"><label>E-posta</label><input class="form-control" name="email" type="email" required placeholder="ornek@mail.com"></div>' : ''}
+          ${!isLogin ? '<div class="form-group"><label>E-posta</label><input class="form-input" name="email" type="email" required placeholder="ornek@mail.com"></div>' : ''}
           <div class="form-group">
             <label>Kullanici Adi</label>
-            <input class="form-control" name="username" required placeholder="kullanici_adi" autocomplete="username">
+            <input class="form-input" name="username" required placeholder="kullanici_adi" autocomplete="username">
           </div>
           <div class="form-group">
             <label>Sifre</label>
-            <input class="form-control" name="password" type="password" required placeholder="En az 6 karakter" autocomplete="current-password">
+            <input class="form-input" name="password" type="password" required placeholder="En az 6 karakter" autocomplete="current-password">
           </div>
-          <button class="btn btn-primary" style="width:100%;margin-top:8px" type="submit">
-            ${isLogin ? 'Giris Yap' : 'Kayit Ol'}
+          <button class="btn btn-primary" style="width:100%;margin-top:8px;justify-content:center" type="submit">
+            ${isLogin ? 'Giris Yap' : 'Hesap Olustur'}
           </button>
         </form>
       </div>
@@ -350,8 +343,7 @@ function bindAuth() {
   form.onsubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData(form);
-    const path = location.pathname;
-    if (path === '/register') {
+    if (location.pathname === '/register') {
       await doRegister(fd.get('email'), fd.get('username'), fd.get('password'));
     } else {
       await doLogin(fd.get('username'), fd.get('password'));
@@ -359,76 +351,74 @@ function bindAuth() {
   };
 }
 
-// ── Dashboard ────────────────────────────────────────────────
+// ── Dashboard ──
 async function renderDashboard() {
   let data;
   try { data = await api('/dashboard'); }
-  catch { return '<p>Dashboard yuklenemedi.</p>'; }
+  catch { return '<p style="color:var(--muted)">Dashboard yuklenemedi.</p>'; }
 
-  const scansHtml = data.recent_scans.length ? data.recent_scans.map(s => `
+  const remaining = data.scans_remaining === -1 ? '∞' : data.scans_remaining;
+
+  const rows = data.recent_scans.length ? data.recent_scans.map(s => `
     <tr onclick="navigate('/scan/${s.id}')" style="cursor:pointer">
-      <td style="font-weight:600">${esc(s.target)}</td>
+      <td><span style="font-weight:600">${esc(s.target)}</span></td>
       <td><span class="badge badge-${s.status}">${s.status}</span></td>
       <td>
         ${s.critical_count?`<span class="sev-critical">${s.critical_count}C</span> `:''}
         ${s.high_count?`<span class="sev-high">${s.high_count}H</span> `:''}
         ${s.medium_count?`<span class="sev-medium">${s.medium_count}M</span> `:''}
-        <span class="sev-info">${s.total_findings} toplam</span>
+        <span class="sev-info">${s.total_findings} total</span>
       </td>
-      <td style="color:var(--muted)">${timeAgo(s.created_at)}</td>
+      <td style="color:var(--muted);font-size:.8rem">${timeAgo(s.created_at)}</td>
     </tr>
-  `).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:30px">Henuz tarama yok</td></tr>';
-
-  const remaining = data.scans_remaining === -1 ? 'Sinirsiz' : data.scans_remaining;
+  `).join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:40px">Henuz tarama yok</td></tr>';
 
   return `
-    <div class="page-header">
+    <div class="page-head">
       <div class="page-title">Dashboard</div>
-      <button class="btn btn-primary" onclick="navigate('/new-scan')">+ Yeni Tarama</button>
+      <button class="btn btn-primary" onclick="navigate('/new-scan')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Yeni Tarama
+      </button>
     </div>
-
     <div class="stats">
-      <div class="stat"><div class="stat-value" style="color:var(--accent)">${data.total_scans}</div><div class="stat-label">Toplam Tarama</div></div>
-      <div class="stat"><div class="stat-value" style="color:var(--cyan)">${data.active_scans}</div><div class="stat-label">Aktif Tarama</div></div>
-      <div class="stat"><div class="stat-value" style="color:var(--green)">${remaining}</div><div class="stat-label">Kalan Kota</div></div>
-      <div class="stat"><div class="stat-value" style="color:var(--yellow)">${data.total_findings}</div><div class="stat-label">Toplam Bulgu</div></div>
-      <div class="stat"><div class="stat-value" style="color:var(--red)">${data.critical_findings}</div><div class="stat-label">Kritik Bulgu</div></div>
-      <div class="stat"><div class="stat-value" style="color:var(--orange)">${data.high_findings}</div><div class="stat-label">Yuksek Bulgu</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--purple-light)">${data.total_scans}</div><div class="stat-lbl">Toplam Tarama</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--blue)">${data.active_scans}</div><div class="stat-lbl">Aktif</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--green)">${remaining}</div><div class="stat-lbl">Kalan Kota</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--yellow)">${data.total_findings}</div><div class="stat-lbl">Toplam Bulgu</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--red)">${data.critical_findings}</div><div class="stat-lbl">Kritik</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--orange)">${data.high_findings}</div><div class="stat-lbl">Yuksek</div></div>
     </div>
-
     <div class="card">
-      <div class="card-title">Son Taramalar</div>
+      <div class="card-head">Son Taramalar</div>
       <table>
         <thead><tr><th>Hedef</th><th>Durum</th><th>Bulgular</th><th>Tarih</th></tr></thead>
-        <tbody>${scansHtml}</tbody>
+        <tbody>${rows}</tbody>
       </table>
-    </div>
-  `;
+    </div>`;
 }
 
-// ── New Scan ─────────────────────────────────────────────────
+// ── New Scan ──
 function renderNewScan() {
   return `
-    <div class="page-header">
-      <div class="page-title">Yeni Tarama Baslat</div>
-    </div>
-    <div class="card" style="max-width:600px">
+    <div class="page-head"><div class="page-title">Yeni Tarama</div></div>
+    <div class="card" style="max-width:560px">
       <form id="scanForm">
         <div class="form-group">
           <label>Hedef URL / IP</label>
-          <input class="form-control" name="target" required placeholder="https://example.com" autofocus>
+          <input class="form-input" name="target" required placeholder="https://example.com" autofocus>
         </div>
         <div class="form-group">
           <label>Tarama Tipi</label>
-          <select class="form-control" name="scan_type" id="scanType">
+          <select class="form-input" name="scan_type" id="scanType">
             <option value="single">Tek Modul</option>
-            <option value="profile" selected>Profil (Paket)</option>
+            <option value="profile" selected>Profil</option>
             <option value="full">Tam Tarama</option>
           </select>
         </div>
         <div class="form-group" id="profileGroup">
           <label>Profil</label>
-          <select class="form-control" name="profile">
+          <select class="form-input" name="profile">
             <option value="web">Web Tarama</option>
             <option value="osint">OSINT</option>
             <option value="vuln">Guvenlik Acigi</option>
@@ -438,165 +428,156 @@ function renderNewScan() {
           </select>
         </div>
         <div class="form-group" id="moduleGroup" style="display:none">
-          <label>Modul ID (virgul ile ayirin)</label>
-          <input class="form-control" name="module_ids" placeholder="1,5,14,23">
+          <label>Modul ID (virgul ile)</label>
+          <input class="form-input" name="module_ids" placeholder="1, 5, 14, 23">
         </div>
         <div style="display:flex;gap:12px">
           <div class="form-group" style="flex:1">
             <label>Timeout (sn)</label>
-            <input class="form-control" name="timeout" type="number" value="8" min="1" max="60">
+            <input class="form-input" name="timeout" type="number" value="8" min="1" max="60">
           </div>
           <div class="form-group" style="flex:1">
-            <label style="display:flex;align-items:center;gap:8px;margin-top:24px">
-              <input type="checkbox" name="turbo" id="turboCheck"> Turbo Mod
+            <label style="display:flex;align-items:center;gap:8px;margin-top:22px;cursor:pointer">
+              <input type="checkbox" name="turbo" id="turboCheck" style="accent-color:var(--purple)"> Turbo Mod
             </label>
           </div>
         </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:8px" type="submit">Taramayi Baslat</button>
+        <button class="btn btn-primary" style="width:100%;margin-top:8px;justify-content:center" type="submit">Taramayi Baslat</button>
       </form>
-    </div>
-  `;
+    </div>`;
 }
 
-// ── Scan List ────────────────────────────────────────────────
+// ── Scan List ──
 async function renderScanList() {
   let data;
   try { data = await api('/scans?per_page=50'); }
-  catch { return '<p>Taramalar yuklenemedi.</p>'; }
+  catch { return '<p style="color:var(--muted)">Taramalar yuklenemedi.</p>'; }
 
   if (!data.scans.length) {
     return `
-      <div class="page-header"><div class="page-title">Taramalarim</div></div>
-      <div class="empty"><p>Henuz hic tarama yapmadiniz.</p><button class="btn btn-primary" onclick="navigate('/new-scan')">Ilk Taramani Baslat</button></div>
-    `;
+      <div class="page-head"><div class="page-title">Taramalarim</div></div>
+      <div class="empty"><p>Henuz hic tarama yapmadiniz.</p><button class="btn btn-primary" onclick="navigate('/new-scan')">Ilk Taramani Baslat</button></div>`;
   }
 
   const rows = data.scans.map(s => `
     <tr onclick="navigate('/scan/${s.id}')" style="cursor:pointer">
       <td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.target)}</td>
       <td><span class="badge badge-${s.status}">${s.status}</span></td>
-      <td>${s.scan_type}${s.profile?' / '+s.profile:''}</td>
+      <td style="font-size:.8rem;color:var(--muted)">${s.scan_type}${s.profile?' / '+s.profile:''}</td>
       <td>
         ${s.critical_count?`<span class="sev-critical">${s.critical_count}</span>/`:''}
         ${s.high_count?`<span class="sev-high">${s.high_count}</span>/`:''}
-        ${s.total_findings} bulgu
+        ${s.total_findings}
       </td>
-      <td>${s.risk_score.toFixed(1)}</td>
-      <td style="color:var(--muted)">${timeAgo(s.created_at)}</td>
+      <td style="font-weight:600">${s.risk_score.toFixed(1)}</td>
+      <td style="color:var(--muted);font-size:.8rem">${timeAgo(s.created_at)}</td>
     </tr>
   `).join('');
 
   return `
-    <div class="page-header">
-      <div class="page-title">Taramalarim (${data.total})</div>
-      <button class="btn btn-primary" onclick="navigate('/new-scan')">+ Yeni Tarama</button>
+    <div class="page-head">
+      <div class="page-title">Taramalarim <span style="color:var(--muted);font-weight:400;font-size:.9rem">(${data.total})</span></div>
+      <button class="btn btn-primary" onclick="navigate('/new-scan')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Yeni Tarama
+      </button>
     </div>
     <div class="card">
       <table>
         <thead><tr><th>Hedef</th><th>Durum</th><th>Tip</th><th>Bulgular</th><th>Risk</th><th>Tarih</th></tr></thead>
         <tbody>${rows}</tbody>
       </table>
-    </div>
-  `;
+    </div>`;
 }
 
-// ── Scan Detail ──────────────────────────────────────────────
+// ── Scan Detail ──
 async function renderScanDetail(id) {
   let scan;
   try { scan = await api(`/scans/${id}`); }
-  catch { return '<p>Tarama bulunamadi.</p>'; }
+  catch { return '<p style="color:var(--muted)">Tarama bulunamadi.</p>'; }
 
-  const riskColor = scan.risk_score >= 7 ? 'var(--red)' : scan.risk_score >= 4 ? 'var(--orange)' : scan.risk_score >= 2 ? 'var(--yellow)' : 'var(--green)';
+  const rc = scan.risk_score >= 7 ? 'var(--red)' : scan.risk_score >= 4 ? 'var(--orange)' : scan.risk_score >= 2 ? 'var(--yellow)' : 'var(--green)';
 
   let findingsHtml = '';
   if (scan.results) {
-    const allFindings = [];
-    for (const [modName, result] of Object.entries(scan.results)) {
-      if (result && result.findings) {
-        for (const f of result.findings) {
-          allFindings.push({ ...f, _module: modName });
-        }
-      }
+    const all = [];
+    for (const [mod, r] of Object.entries(scan.results)) {
+      if (r && r.findings) r.findings.forEach(f => all.push({ ...f, _mod: mod }));
     }
-    const sevOrder = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
-    allFindings.sort((a, b) => (sevOrder[a.severity]||4) - (sevOrder[b.severity]||4));
+    all.sort((a, b) => ({ critical:0, high:1, medium:2, low:3, info:4 }[a.severity]||4) - ({ critical:0, high:1, medium:2, low:3, info:4 }[b.severity]||4));
 
-    findingsHtml = allFindings.length ? allFindings.map(f => `
+    findingsHtml = all.length ? all.map(f => `
       <div class="finding ${f.severity}">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-          <span class="badge badge-${f.severity === 'critical'||f.severity === 'high'?'failed':f.severity === 'medium'?'pending':'completed'}" style="font-size:.7rem">${f.severity.toUpperCase()}</span>
-          <strong style="font-size:.9rem">${esc(f.title)}</strong>
-          <span style="margin-left:auto;font-size:.75rem;color:var(--muted)">${esc(f._module)}</span>
+          <span class="sev-${f.severity}" style="font-size:.72rem;font-weight:700;text-transform:uppercase;min-width:55px">${f.severity}</span>
+          <strong style="font-size:.86rem">${esc(f.title)}</strong>
+          <span style="margin-left:auto;font-size:.72rem;color:var(--muted)">${esc(f._mod)}</span>
         </div>
-        <div style="font-size:.82rem;color:var(--muted)">${esc(f.detail||'')}</div>
+        <div style="font-size:.8rem;color:var(--muted);padding-left:63px">${esc(f.detail||'')}</div>
       </div>
-    `).join('') : '<p style="color:var(--muted);text-align:center;padding:20px">Bulgu tespit edilmedi.</p>';
+    `).join('') : '<p style="color:var(--muted);text-align:center;padding:24px">Bulgu tespit edilmedi.</p>';
   } else if (scan.status === 'running' || scan.status === 'pending') {
-    findingsHtml = '<p style="color:var(--cyan);text-align:center;padding:20px">Tarama devam ediyor...</p>';
+    findingsHtml = '<div style="text-align:center;padding:30px;color:var(--blue)"><div style="font-size:1.1rem;font-weight:600;margin-bottom:4px">Tarama devam ediyor...</div><div style="font-size:.82rem;color:var(--muted)">Sayfa otomatik yenilenecek</div></div>';
   }
 
   const reportBtns = scan.status === 'completed' ? `
-    <div style="display:flex;gap:8px;margin-top:12px">
+    <div style="display:flex;gap:8px;margin-top:14px">
       <a class="btn btn-ghost btn-sm" href="/api/scans/${id}/report/html" target="_blank">HTML Rapor</a>
-      <a class="btn btn-ghost btn-sm" href="/api/scans/${id}/report/json" target="_blank">JSON Rapor</a>
-      <a class="btn btn-ghost btn-sm" href="/api/scans/${id}/report/pdf" target="_blank">PDF Rapor</a>
-    </div>
-  ` : '';
+      <a class="btn btn-ghost btn-sm" href="/api/scans/${id}/report/json" target="_blank">JSON</a>
+      <a class="btn btn-ghost btn-sm" href="/api/scans/${id}/report/pdf" target="_blank">PDF</a>
+    </div>` : '';
 
   const autoRefresh = (scan.status === 'running' || scan.status === 'pending')
     ? `<script>setTimeout(()=>navigate('/scan/${id}'),5000)<\/script>` : '';
 
   return `
-    <div class="page-header">
+    <div class="page-head">
       <div>
         <div class="page-title">${esc(scan.target)}</div>
-        <div style="color:var(--muted);font-size:.85rem;margin-top:4px">
+        <div style="color:var(--muted);font-size:.82rem;margin-top:4px;display:flex;align-items:center;gap:10px">
           <span class="badge badge-${scan.status}">${scan.status}</span>
-          &nbsp; ${scan.scan_type}${scan.profile?' / '+scan.profile:''} &nbsp; ${timeAgo(scan.created_at)}
+          ${scan.scan_type}${scan.profile?' / '+scan.profile:''}
+          <span>${timeAgo(scan.created_at)}</span>
         </div>
       </div>
       <button class="btn btn-ghost" onclick="navigate('/scans')">Geri</button>
     </div>
-
     <div class="stats">
       <div class="stat">
-        <div class="stat-value" style="color:${riskColor}">${scan.risk_score.toFixed(1)}</div>
-        <div class="stat-label">Risk Skoru</div>
-        <div class="risk-meter"><div class="risk-fill" style="width:${scan.risk_score*10}%;background:${riskColor}"></div></div>
+        <div class="stat-val" style="color:${rc}">${scan.risk_score.toFixed(1)}</div>
+        <div class="stat-lbl">Risk Skoru</div>
+        <div class="risk-bar"><div class="risk-fill" style="width:${scan.risk_score*10}%;background:${rc}"></div></div>
       </div>
-      <div class="stat"><div class="stat-value sev-critical">${scan.critical_count}</div><div class="stat-label">Kritik</div></div>
-      <div class="stat"><div class="stat-value sev-high">${scan.high_count}</div><div class="stat-label">Yuksek</div></div>
-      <div class="stat"><div class="stat-value sev-medium">${scan.medium_count}</div><div class="stat-label">Orta</div></div>
-      <div class="stat"><div class="stat-value sev-low">${scan.low_count}</div><div class="stat-label">Dusuk</div></div>
-      <div class="stat"><div class="stat-value" style="color:var(--accent)">${scan.total_findings}</div><div class="stat-label">Toplam</div></div>
+      <div class="stat"><div class="stat-val sev-critical">${scan.critical_count}</div><div class="stat-lbl">Kritik</div></div>
+      <div class="stat"><div class="stat-val sev-high">${scan.high_count}</div><div class="stat-lbl">Yuksek</div></div>
+      <div class="stat"><div class="stat-val sev-medium">${scan.medium_count}</div><div class="stat-lbl">Orta</div></div>
+      <div class="stat"><div class="stat-val sev-low">${scan.low_count}</div><div class="stat-lbl">Dusuk</div></div>
+      <div class="stat"><div class="stat-val" style="color:var(--purple-light)">${scan.total_findings}</div><div class="stat-lbl">Toplam</div></div>
     </div>
-
     ${reportBtns}
-
-    <div class="card" style="margin-top:20px">
-      <div class="card-title">Bulgular (${scan.total_findings})</div>
+    <div class="card" style="margin-top:18px">
+      <div class="card-head">Bulgular (${scan.total_findings})</div>
       ${findingsHtml}
     </div>
-    ${autoRefresh}
-  `;
+    ${autoRefresh}`;
 }
 
-// ── Settings ─────────────────────────────────────────────────
+// ── Settings ──
 function renderSettings() {
   const u = currentUser;
   return `
-    <div class="page-header"><div class="page-title">Hesap Ayarlari</div></div>
-    <div class="card" style="max-width:500px">
-      <div class="card-title">API Anahtari</div>
+    <div class="page-head"><div class="page-title">Ayarlar</div></div>
+    <div class="card" style="max-width:520px">
+      <div class="card-head">API Anahtari</div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input class="form-control" value="${u.api_key}" readonly id="apiKeyInput" style="font-family:monospace;font-size:.82rem">
+        <input class="form-input" value="${u.api_key}" readonly id="apiKeyInput" style="font-family:monospace;font-size:.78rem">
         <button class="btn btn-ghost btn-sm" onclick="copyApiKey()">Kopyala</button>
       </div>
       <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="regenApiKey()">Yeniden Olustur</button>
     </div>
-    <div class="card" style="max-width:500px">
-      <div class="card-title">API Kullanimi</div>
-      <pre style="background:var(--bg);padding:14px;border-radius:8px;font-size:.78rem;overflow-x:auto;color:var(--cyan)">
+    <div class="card" style="max-width:520px">
+      <div class="card-head">API Kullanimi</div>
+      <pre style="background:var(--bg);padding:16px;border-radius:8px;font-size:.75rem;overflow-x:auto;color:var(--blue-light);line-height:1.8">
 # Tarama baslat
 curl -X POST ${location.origin}/api/scans \\
   -H "Authorization: Bearer ${u.api_key}" \\
@@ -605,56 +586,50 @@ curl -X POST ${location.origin}/api/scans \\
 
 # Sonuc goruntule
 curl ${location.origin}/api/scans/SCAN_ID \\
-  -H "Authorization: Bearer ${u.api_key}"
-      </pre>
-    </div>
-  `;
+  -H "Authorization: Bearer ${u.api_key}"</pre>
+    </div>`;
 }
 
-// ── Plans ────────────────────────────────────────────────────
+// ── Plans ──
 async function renderPlans() {
   let plans;
-  try { plans = await api('/plans'); } catch { return '<p>Planlar yuklenemedi</p>'; }
+  try { plans = await api('/plans'); } catch { return '<p style="color:var(--muted)">Planlar yuklenemedi</p>'; }
   const cards = Object.entries(plans).map(([key, p]) => `
     <div class="plan-card ${currentUser.plan === key ? 'current' : ''}">
-      <div style="font-size:1.2rem;font-weight:700">${p.name}</div>
-      <div class="plan-price">$${p.price_monthly}<span>/ay</span></div>
-      <div style="text-align:left;font-size:.85rem;color:var(--muted);line-height:2">
+      <div style="font-size:1.1rem;font-weight:700">${p.name}</div>
+      <div class="plan-price">$${p.price_monthly}<span> /ay</span></div>
+      <div style="text-align:left;font-size:.82rem;color:var(--muted);line-height:2;margin-bottom:20px">
         <div>${p.scans_per_month === -1 ? 'Sinirsiz' : p.scans_per_month} tarama/ay</div>
-        <div>${p.max_modules_per_scan} modul/tarama</div>
+        <div>${p.max_modules_per_scan} modul</div>
         <div>Profiller: ${p.allowed_profiles.join(', ')}</div>
         <div>Turbo: ${p.turbo ? 'Var' : 'Yok'}</div>
         <div>API: ${p.api_access ? 'Var' : 'Yok'}</div>
-        <div>Raporlar: ${p.report_formats.join(', ')}</div>
+        <div>Rapor: ${p.report_formats.join(', ').toUpperCase()}</div>
       </div>
       ${currentUser.plan === key
-        ? '<button class="btn btn-ghost" style="width:100%;margin-top:16px" disabled>Mevcut Plan</button>'
-        : '<button class="btn btn-primary" style="width:100%;margin-top:16px" disabled>Yakinda</button>'}
+        ? '<button class="btn btn-ghost" style="width:100%;justify-content:center;opacity:.5" disabled>Mevcut Plan</button>'
+        : '<button class="btn btn-primary" style="width:100%;justify-content:center" disabled>Yakinda</button>'}
     </div>
   `).join('');
-
   return `
-    <div class="page-header"><div class="page-title">Abonelik Planlari</div></div>
-    <div class="plans-grid">${cards}</div>
-  `;
+    <div class="page-head"><div class="page-title">Planlar</div></div>
+    <div class="plans-grid">${cards}</div>`;
 }
 
-// ── Event Binding ────────────────────────────────────────────
+// ── Events ──
 function bindEvents() {
-  const scanType = document.getElementById('scanType');
-  if (scanType) {
-    scanType.onchange = () => {
-      const v = scanType.value;
-      document.getElementById('profileGroup').style.display = v === 'profile' ? '' : 'none';
-      document.getElementById('moduleGroup').style.display = v === 'single' ? '' : 'none';
+  const st = document.getElementById('scanType');
+  if (st) {
+    st.onchange = () => {
+      document.getElementById('profileGroup').style.display = st.value === 'profile' ? '' : 'none';
+      document.getElementById('moduleGroup').style.display = st.value === 'single' ? '' : 'none';
     };
   }
-
-  const scanForm = document.getElementById('scanForm');
-  if (scanForm) {
-    scanForm.onsubmit = async (e) => {
+  const sf = document.getElementById('scanForm');
+  if (sf) {
+    sf.onsubmit = async (e) => {
       e.preventDefault();
-      const fd = new FormData(scanForm);
+      const fd = new FormData(sf);
       const body = {
         target: fd.get('target'),
         scan_type: fd.get('scan_type'),
@@ -674,14 +649,12 @@ function bindEvents() {
   }
 }
 
-// ── Helpers ──────────────────────────────────────────────────
+// ── Helpers ──
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function timeAgo(iso) {
   if (!iso) return '';
-  const d = new Date(iso);
-  const now = new Date();
-  const diff = (now - d) / 1000;
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
   if (diff < 60) return 'az once';
   if (diff < 3600) return Math.floor(diff/60) + ' dk once';
   if (diff < 86400) return Math.floor(diff/3600) + ' saat once';
@@ -689,20 +662,18 @@ function timeAgo(iso) {
 }
 
 async function copyApiKey() {
-  const inp = document.getElementById('apiKeyInput');
-  if (inp) { await navigator.clipboard.writeText(inp.value); toast('API anahtari kopyalandi'); }
+  const v = document.getElementById('apiKeyInput')?.value;
+  if (v) { await navigator.clipboard.writeText(v); toast('Kopyalandi'); }
 }
 
 async function regenApiKey() {
   try {
-    const u = await api('/auth/regenerate-api-key', { method: 'POST' });
-    currentUser = u;
+    currentUser = await api('/auth/regenerate-api-key', { method: 'POST' });
     toast('API anahtari yenilendi');
     render();
   } catch (e) { toast(e.message, 'error'); }
 }
 
-// ── Init ─────────────────────────────────────────────────────
 render();
 </script>
 </body>
